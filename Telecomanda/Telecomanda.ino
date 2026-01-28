@@ -29,8 +29,7 @@ void setup() {
 
 // the loop function runs over and over again forever
 void loop() {
-  // IrSender.sendNEC(DATA, 32);
-  // IrSender.sendNECRaw(0xAB054F, 0);
+  // IrSender.sendRaw(tclPowerRaw, sizeof(tclPowerRaw) / sizeof(tclPowerRaw[0]), 38);
   // Serial.println("Sent.");
   // if (IrReceiver.decode()) {
   //   if (IrReceiver.decodedIRData.protocol != UNKNOWN) {
@@ -44,11 +43,10 @@ void loop() {
   //   }
   //   IrReceiver.resume();
   // }
-  // if (IrReceiver.decode()) {
-  //   // This command generates the EXACT array you need to copy
-  //   IrReceiver.printIRResultRawFormatted(&Serial, true);
-  //   IrReceiver.resume();
-  // }
-  IrSender.sendRaw(tclPowerRaw, sizeof(tclPowerRaw) / sizeof(tclPowerRaw[0]), 38);
-  delay(5000);
+  if (IrReceiver.decode()) {
+    // This command generates the EXACT array you need to copy
+    IrReceiver.printIRResultRawFormatted(&Serial, true);
+    IrReceiver.resume();
+  }
+  delay(200);
 }

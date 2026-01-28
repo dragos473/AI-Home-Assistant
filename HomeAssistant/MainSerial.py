@@ -20,7 +20,7 @@ def sync_arduino_header(path="commands.h"):
     with open(path, "w") as f:
         f.write("// !!AUTO-GENERATED \n#pragma once\n\n")
         for name, (code, _) in COMMS.items():
-            f.write(f'#define CMD_{name} "{code}"\n')
+            f.write(f'#define {name} "{code}"\n')
     print(f"Arduino header '{path}' created")
 
 # Context for AI model
@@ -43,13 +43,18 @@ def compute_response(user_input):
         },
         contents=prompt
     ).text
-    print(f"AI Response: {response}")
+    JSON = json.loads(response)
+    print(f"Parsed JSON: {JSON}")
+    if JSON["type"] == "command":
+        arduino.write(bytes(COMMS[JSON["value"]][0] + "\n", 'utf-8'))
+
+    # print(f"AI Response: {COMMS[JSON["value"]][0]}")
 
 # Arduino setup - serial connection & header sync
 sync_arduino_header()
 rec = sr.Recognizer()
 arduino  = serial.Serial('COM3', 9600, timeout=1)
-print("Connecting to Arduino...")
+# print("Connecting to Arduino...")
 time.sleep(2)
 print("Arduino connected")
 client = genai.Client(api_key=GEMINI_API_KEY)
