@@ -1,22 +1,37 @@
 #include "commands.h"
 #include "HomeAssistant.h"
 
-String currentMsg;
-
 void setup() {
   Serial.begin(9600);
   setupIR();
+  setupOLED();
 }
 
 void loop() {
   if (Serial.available() > 0) {
     currentMsg = Serial.readStringUntil('\n');
     currentMsg.trim();
-  }
 
-  if (currentMsg == TV_ON){
-    sendIRSignal(tclPowerRaw);
-    currentMsg = "";
+    if (currentMsg == TV_ON){
+      if (!tv_on) {
+      sendIRSignal(tclPowerRaw);
+      tv_on = true;
+      }
+    } else if (currentMsg == TV_OFF) {
+      if (tv_on) {
+      sendIRSignal(tclPowerRaw);
+      tv_on = false;
+
+      }
+    } else if (currentMsg == TV_OFF) {
+      
+    } else if (currentMsg == TV_OFF) {
+      
+    } else {
+      msg = currentMsg;
+    }
   }
-  delay(5000);
+  printOLED(msg);
+
+  delay(200);
 }

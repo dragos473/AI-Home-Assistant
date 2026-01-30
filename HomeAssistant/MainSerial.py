@@ -4,7 +4,7 @@ import time
 import json
 from google import genai
 
-GEMINI_API_KEY = ""
+GEMINI_API_KEY = open("API_KEY").read().strip()
 
 # Command definitions
 COMMS ={
@@ -47,6 +47,8 @@ def compute_response(user_input):
     print(f"Parsed JSON: {JSON}")
     if JSON["type"] == "command":
         arduino.write(bytes(COMMS[JSON["value"]][0] + "\n", 'utf-8'))
+    else:
+        arduino.write(bytes(JSON["value"] + "\n", 'utf-8'))
 
     # print(f"AI Response: {COMMS[JSON["value"]][0]}")
 
@@ -70,6 +72,7 @@ with sr.Microphone(device_index= 2) as source:
             audio = rec.listen(source)
             input =  rec.recognize_google(audio, language="en-US").lower()
             compute_response(input)
+            # arduino.write(bytes(COMMS["TV_ON"][0] + "\n", 'utf-8'))
             # msg = client.models.generate_content(model = "gemini-2.5-flash-lite", contents = "Respond in 30 characters or less." + input).text
             # arduino.write(bytes(msg, 'utf-8'))
         except sr.UnknownValueError:
