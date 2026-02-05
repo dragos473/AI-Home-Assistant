@@ -23,15 +23,21 @@ void loop() {
       tv_on = false;
 
       }
-    } else if (currentMsg == TV_OFF) {
-      
+    } else if (currentMsg == GET_TEMP) {
+        readTempAndHumidity();
+        sprintf(currentMsg.c_str(), "Temp:%d \xB0\C  Humidity:%d%%\n", temp, humid);
+        currentMsg.trim();
     } else if (currentMsg == TV_OFF) {
       
     } else {
       msg = currentMsg;
     }
   }
+
+  // currentMsg = msg;
+  //Serial.print(msg);
   printOLED(msg);
+  
 
   delay(200);
 }

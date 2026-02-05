@@ -13,6 +13,7 @@ COMMS ={
     "LIGHTS_OFF": ("L0", "Turns the room lights off"),
     "TV_ON":      ("T1", "Powers on the television"),
     "TV_OFF":     ("T0", "Powers off the television"),
+    "GET_TEMP":   ("TP", "Reads the current room temperature")
 }
 
 # Header for Arduino code - AUTO-GENERATED
@@ -50,7 +51,6 @@ def compute_response(user_input):
     else:
         arduino.write(bytes(JSON["value"] + "\n", 'utf-8'))
 
-    # print(f"AI Response: {COMMS[JSON["value"]][0]}")
 
 # Arduino setup - serial connection & header sync
 sync_arduino_header()
@@ -72,9 +72,6 @@ with sr.Microphone(device_index= 2) as source:
             audio = rec.listen(source)
             input =  rec.recognize_google(audio, language="en-US").lower()
             compute_response(input)
-            # arduino.write(bytes(COMMS["TV_ON"][0] + "\n", 'utf-8'))
-            # msg = client.models.generate_content(model = "gemini-2.5-flash-lite", contents = "Respond in 30 characters or less." + input).text
-            # arduino.write(bytes(msg, 'utf-8'))
         except sr.UnknownValueError:
             print("Sorry, I could not understand the audio.")
         except sr.RequestError as e:

@@ -2,15 +2,21 @@
 #include <IRremote.hpp>
 #include <U8g2lib.h>
 #include <Wire.h>
+#include <DHT11.h>
 
 // IRrecv irrecv(RECV_PIN);
 U8G2_SH1106_128X64_NONAME_1_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
 
-String currentMsg;
+String currentMsg = "";
 String msg = "Hello! I am your new assistant";
 bool tv_on = false;
 int typewriterIdx = 0;
 int lastUpdate = 0;
+
+DHT11 dht11(2);
+int temp = 0;
+int humid = 0;
+
 
 const uint16_t tclPowerRaw[] PROGMEM = {
   4050, 3900,  // Header
@@ -34,7 +40,7 @@ void sendIRSignal(uint16_t* rawData) {
 
 void setupOLED() {
   u8g2.begin();
-  u8g2.setFont(u8g2_font_ncenB10_tr);
+  u8g2.setFont(u8g2_font_ncenB10_te);
 }
 
 void printOLED(String msg){
@@ -42,6 +48,7 @@ void printOLED(String msg){
   //doar daca am mesaj nou
   if (currentMsg != msg) {
     typewriterIdx = 0;
+    currentMsg = msg;
   }
   if (millis() - lastUpdate > 100 && typewriterIdx <= msg.length()) {
     typewriterIdx++;
@@ -69,4 +76,19 @@ void printOLED(String msg){
       x += w + 2;
     }
   } while (u8g2.nextPage());
+}
+
+void readTempAndHumidity(){
+  int result = dht11.readTemperatureHumidity(temp, humid);
+  // if (result == 0) {
+  //     Serial.print("Temperature: ");
+  //     Serial.print(temp);
+  //     Serial.print(" °C\tHumidity: ");
+  //     Serial.print(humid);
+  //     Serial.println(" %");
+  // } else {
+  //     // Print error message based on the error code.
+  //     Serial.println(DHT11::getErrorString(result));
+  // }
+  delay(200);
 }

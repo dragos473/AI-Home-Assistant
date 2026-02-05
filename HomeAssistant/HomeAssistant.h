@@ -9,6 +9,8 @@ extern String msg;
 extern bool tv_on;
 extern int typewriterIdx;
 extern int lastUpdate;
+extern int temp;
+extern int humid;
 #define IR_SEND_PIN 7
 #define IR_RECV_PIN 4
 #define FREQ 38
@@ -19,4 +21,5 @@ void sendIRSignal(uint16_t* rawData);
 void setupOLED();
 void printOLED(String msg);
 
+void readTempAndHumidity();
 #endif
