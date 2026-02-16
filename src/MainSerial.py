@@ -4,7 +4,7 @@ import time
 import json
 from google import genai
 
-GEMINI_API_KEY = open("API_KEY").read().strip()
+GEMINI_API_KEY = open("src/API_KEY").read().strip()
 
 # Command definitions
 COMMS ={
@@ -17,7 +17,7 @@ COMMS ={
 }
 
 # Header for Arduino code - AUTO-GENERATED
-def sync_arduino_header(path="commands.h"):
+def sync_arduino_header(path="src/commands.h"):
     with open(path, "w") as f:
         f.write("// !!AUTO-GENERATED \n#pragma once\n\n")
         for name, (code, _) in COMMS.items():

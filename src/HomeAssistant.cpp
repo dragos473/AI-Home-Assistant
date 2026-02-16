@@ -13,7 +13,7 @@ bool tv_on = false;
 int typewriterIdx = 0;
 int lastUpdate = 0;
 
-DHT11 dht11(2);
+DHT11 dht11(TEMP_HUMID_PIN);
 int temp = 0;
 int humid = 0;
 
@@ -34,7 +34,7 @@ void setupIR() {
   IrSender.begin(IR_SEND_PIN);
 }
 
-void sendIRSignal(uint16_t* rawData) {
+void sendIRSignal(const uint16_t* rawData) {
 	IrSender.sendRaw_P(rawData, 51, FREQ);
 }
 

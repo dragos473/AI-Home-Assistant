@@ -25,7 +25,9 @@ void loop() {
       }
     } else if (currentMsg == GET_TEMP) {
         readTempAndHumidity();
-        sprintf(currentMsg.c_str(), "Temp:%d \xB0\C  Humidity:%d%%\n", temp, humid);
+        char buffer[20];
+        snprintf(buffer, sizeof(buffer), "Temp:%d \xB0" "C  Humidity:%d%%\n", temp, humid);
+        currentMsg = buffer;
         currentMsg.trim();
     } else if (currentMsg == TV_OFF) {
       

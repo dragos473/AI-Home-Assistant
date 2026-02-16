@@ -12,11 +12,12 @@ extern int lastUpdate;
 extern int temp;
 extern int humid;
 #define IR_SEND_PIN 7
-#define IR_RECV_PIN 4
+#define IR_RECV_PIN 6
+#define TEMP_HUMID_PIN 5
 #define FREQ 38
 
 void setupIR();
-void sendIRSignal(uint16_t* rawData);
+void sendIRSignal(const uint16_t* rawData);
 
 void setupOLED();
 void printOLED(String msg);
