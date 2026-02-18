@@ -3,26 +3,9 @@ import serial
 import time
 import json
 from google import genai
+from SyncComms import COMMS
 
-GEMINI_API_KEY = open("src/API_KEY").read().strip()
-
-# Command definitions
-COMMS ={
-    # name : (code, description)
-    "LIGHTS_ON":  ("L1", "Turns the room lights on"),
-    "LIGHTS_OFF": ("L0", "Turns the room lights off"),
-    "TV_ON":      ("T1", "Powers on the television"),
-    "TV_OFF":     ("T0", "Powers off the television"),
-    "GET_TEMP":   ("TP", "Reads the current room temperature")
-}
-
-# Header for Arduino code - AUTO-GENERATED
-def sync_arduino_header(path="src/commands.h"):
-    with open(path, "w") as f:
-        f.write("// !!AUTO-GENERATED \n#pragma once\n\n")
-        for name, (code, _) in COMMS.items():
-            f.write(f'#define {name} "{code}"\n')
-    print(f"Arduino header '{path}' created")
+GEMINI_API_KEY = open("API_KEY").read().strip()
 
 # Context for AI model
 available_commands = ", ".join(COMMS.keys())
@@ -31,6 +14,7 @@ You are a home automation controller. Your output must always be a JSON object.
 Available Commands: {available_commands}.
 
 If the user input matches a command intent, return: {{"type": "command", "value": "COMMAND_NAME"}}
+If the user input matches a command intent with a parameter, return: {{"type": "command", "value": "COMMAND_NAME", "parameter": "PARAMETER_VALUE"}}
 If the user is chatting, return: {{"type": "chat", "value": "30-character response"}}
 """
 
@@ -53,7 +37,6 @@ def compute_response(user_input):
 
 
 # Arduino setup - serial connection & header sync
-sync_arduino_header()
 rec = sr.Recognizer()
 arduino  = serial.Serial('COM3', 9600, timeout=1)
 # print("Connecting to Arduino...")

@@ -1,5 +1,5 @@
-#include "commands.h"
-#include "HomeAssistant.h"
+#include "../lib/commands.h"
+#include "../lib/HomeAssistant.h"
 
 void setup() {
   Serial.begin(9600);
@@ -29,7 +29,7 @@ void loop() {
         snprintf(buffer, sizeof(buffer), "Temp:%d \xB0" "C  Humidity:%d%%\n", temp, humid);
         currentMsg = buffer;
         currentMsg.trim();
-    } else if (currentMsg == TV_OFF) {
+    } else if (currentMsg == SET_TEMP) {
       
     } else {
       msg = currentMsg;
