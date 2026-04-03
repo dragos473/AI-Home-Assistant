@@ -14,8 +14,11 @@ You are a home automation controller. Your output must always be a JSON object.
 Available Commands: {available_commands}.
 
 If the user input matches a command intent, return: {{"type": "command", "value": "COMMAND_NAME"}}
-If the user input matches a command intent with a parameter, return: {{"type": "command", "value": "COMMAND_NAME", "parameter": "PARAMETER_VALUE"}}
+If the user input matches a command intent with a parameter, return: {{"type": "commandP", "value": "COMMAND_NAME", "parameter": "PARAMETER_VALUE"}}
 If the user is chatting, return: {{"type": "chat", "value": "30-character response"}}
+
+-for time-based commands, the parameter will be a duration in seconds (e.g., "Set a reminder for 10 minutes" -> parameter: "600")
+-for parameter-based commands, the parameter will be a string (e.g., "Set the temperature to 22 degrees" -> parameter: "22")
 """
 
 def compute_response(user_input):
@@ -32,6 +35,10 @@ def compute_response(user_input):
     print(f"Parsed JSON: {JSON}")
     if JSON["type"] == "command":
         arduino.write(bytes(COMMS[JSON["value"]][0] + "\n", 'utf-8'))
+    elif JSON["type"] == "commandP":
+        arduino.write(bytes(COMMS[JSON["value"]][0] + "\n", 'utf-8'))
+        time.sleep(0.5)  # Short delay to ensure command is processed
+        arduino.write(bytes(JSON["parameter"] + "\n", 'utf-8'))
     else:
         arduino.write(bytes(JSON["value"] + "\n", 'utf-8'))
 

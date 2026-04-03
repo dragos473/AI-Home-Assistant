@@ -29,13 +29,25 @@ const uint16_t tclPowerRaw[] PROGMEM = {
   550 // Stop bit
 };
 
+const uint16_t acPowerRaw[] PROGMEM = {
+    600, 500, 550, 1650, 550, 500, 550, 550, 
+    550, 500, 550, 1650, 550, 1600, 600, 1600, 
+    550, 1600, 550, 1600, 550, 1650, 550, 1600, 
+    550, 1600, 550, 550, 550, 500, 550, 550, 
+    550, 550, 550, 500, 550, 1650, 550, 550, 
+    550, 500, 550, 1650, 550, 1600, 550, 550, 
+    550, 500, 550, 550, 550, 550, 550, 1650, 
+    500, 1650, 500, 550, 550, 550, 550, 1650, 
+    500, 1650, 500, 1650, 600
+};
+
 void setupIR() {
   //IrReceiver.begin(IR_RECV_PIN, ENABLE_LED_FEEDBACK);
   IrSender.begin(IR_SEND_PIN);
 }
 
-void sendIRSignal(const uint16_t* rawData) {
-	IrSender.sendRaw_P(rawData, 51, FREQ);
+void sendIRSignal(const uint16_t* rawData, uint8_t length) {
+	IrSender.sendRaw_P(rawData, length, FREQ);
 }
 
 void setupOLED() {

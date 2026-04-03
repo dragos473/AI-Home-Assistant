@@ -1,4 +1,3 @@
-# Command definitions
 COMMS ={
     # name : (code, description)
     "LIGHTS_ON":  ("L1", "Turns the room lights on"),
