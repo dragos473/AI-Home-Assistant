@@ -1,27 +1,63 @@
-# AI Home Assistant – Voice-Controlled Room Automation
+# AI Home Assistant
 
-A voice-controlled home automation system that combines an Arduino microcontroller with a Python-powered AI backend. Speak a command, and Gemini interprets the intent, dispatches it over serial, and the Arduino executes it — whether that's toggling a TV via IR, reading room temperature, or displaying a conversational response on an OLED screen.
+## Overview
+The AI Home Assistant is a voice-controlled automation system that bridges natural language processing with embedded hardware control. It utilizes a Python backend integrated with the Google Gemini API to classify spoken audio into structured JSON commands. These commands are dynamically routed either as conversational responses or hardware directives to an Arduino-based microcontroller.
 
-## 🚀 Key Features
+## System Architecture
 
-**Voice-to-Action Pipeline:** Captures voice input via microphone, transcribes it with Google Speech Recognition, and routes it through Gemini 2.5 Flash Lite to classify intent as either a device command or a conversational reply.
+The project is divided into two primary components synchronized via an automated build pipeline:
 
-**IR Device Control:** Sends raw IR signals to power a TV on/off using a captured TCL power code. The system tracks device state to prevent redundant toggles.
+### 1. Software Backend (Python)
+* **Voice Processing & NLU:** Captures spoken audio and leverages the Google Gemini API for intent classification and entity extraction.
+* **Command Routing:** Parses the API output into structured JSON and serializes the data for transmission to the microcontroller over a serial interface.
 
-**Environment Monitoring:** Reads real-time temperature and humidity from a DHT11 sensor and displays formatted readings on command.
+### 2. Firmware (Arduino C++ / PlatformIO)
+* **Hardware Execution:** Receives serial directives from the Python backend and translates them into actionable hardware states.
+* **Appliance Management:** Drives raw IR (Infrared) signal transmissions to control standard household appliances.
+* **User Interface:** Renders conversational AI text output and system states on an I2C OLED display.
 
-**OLED Typewriter Display:** All responses — AI chat replies, sensor readings, status messages — are rendered on a 128x64 OLED with a character-by-character typewriter animation and automatic line wrapping.
+### 3. Automated Protocol Synchronization
+To maintain parity between the Python backend and the C++ firmware, the project utilizes automated PlatformIO build hooks (`pio_hooks.py` / `SyncComms.py`). Prior to compilation, these scripts auto-generate shared C++ headers (`commands.h`), ensuring that communication protocols and command IDs are strictly synchronized across both environments without manual intervention.
 
-**Synced Command Protocol:** A single Python dictionary (`SyncComms.py`) acts as the source of truth for all command codes. A build hook auto-generates the corresponding C++ header before every compilation, eliminating protocol drift between the two layers.
+## Repository Structure
 
-**Zero-Setup Build Hooks:** PlatformIO pre-build and post-upload hooks handle everything automatically — syncing the command header, installing Python dependencies, and launching the Voice Assistant in a separate terminal after flashing.
+```text
+├── include/                 # Project header files
+├── lib/                     # Custom C++ libraries (e.g., HomeAssistant)
+│   ├── commands.h           # Auto-generated shared protocol header
+│   └── HomeAssistant.h      # Core microcontroller logic header
+├── scripts/                 # Python backend and build scripts
+│   ├── VoiceAssistant.py    # Main voice capture and Gemini API interface
+│   ├── SyncComms.py         # Protocol synchronization logic
+│   └── pio_hooks.py         # PlatformIO pre-build integration
+├── src/                     # C++ source files
+│   ├── main.cpp             # Firmware entry point
+│   └── HomeAssistant.cpp    # Core microcontroller logic implementation
+└── platformio.ini           # PlatformIO project configuration
+```
 
-## 🛠 Technical Stack
+## Hardware Requirements
+* Arduino-compatible microcontroller
+* I2C OLED Display
+* IR Transmitter Module
+* Microphone (for backend audio capture)
 
-**Hardware:** Arduino, IR LED (38kHz), DHT11 Sensor, SH1106 128x64 OLED (I2C)
+## Setup & Installation
 
-**Firmware:** C++ / PlatformIO (IRremote, U8g2, DHT11)
+### Firmware Deployment
+1. Install [PlatformIO](https://platformio.org/).
+2. Open the project directory in your PlatformIO-enabled IDE (e.g., VS Code).
+3. The pre-build hooks will automatically execute `SyncComms.py` to generate `commands.h`.
+4. Build and upload the firmware to your microcontroller:
+   ```bash
+   pio run --target upload
+   ```
 
-**Backend:** Python (SpeechRecognition, Google Gemini API, PySerial)
-
-**Communication:** Serial (9600 baud) with a shared auto-generated command protocol
+### Backend Initialization
+1. Ensure Python 3.10+ is installed.
+2. Navigate to the `scripts/` directory and install the required dependencies (e.g., serial, audio processing, and Gemini API libraries).
+3. Export your Google Gemini API key as an environment variable.
+4. Execute the voice assistant:
+   ```bash
+   python scripts/VoiceAssistant.py
+   ```
